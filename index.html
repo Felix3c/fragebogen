@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADHS: Wo hakt es?</title>
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --grund: #f6f3ee; --karte: #fffdf9; --text: #22201c; --leise: #6b665e;
+    --linie: #ddd6ca; --akzent: #2f6f62; --akzent-hell: #dcebe6; --warn: #9a4a2a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --grund: #1a1917; --karte: #23221f; --text: #ece8e1; --leise: #a39d93;
+            --linie: #3a3833; --akzent: #7cc2b1; --akzent-hell: #243a35; --warn: #e0a080; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--grund); color: var(--text);
+         font: 17px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 620px; margin: 0 auto; padding: 24px 16px 64px; }
+  .kopf { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .fortschritt { flex: 1; height: 6px; background: var(--linie); border-radius: 3px; margin-right: 16px; overflow: hidden; }
+  .fortschritt i { display: block; height: 100%; width: 0; background: var(--akzent); transition: width .3s; }
+  .sprache button { background: none; border: 1px solid var(--linie); color: var(--leise);
+                    padding: 4px 10px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 14px; }
+  .sprache button[aria-pressed="true"] { color: var(--text); border-color: var(--text); }
+  .karte { background: var(--karte); border: 1px solid var(--linie); border-radius: 14px; padding: 24px 20px; }
+  h1 { font-size: 26px; line-height: 1.25; margin: 0 0 14px; }
+  h2 { font-size: 22px; line-height: 1.3; margin: 0 0 6px; }
+  .erklaer { color: var(--leise); margin: 0 0 22px; }
+  .frage { font-weight: 600; margin: 20px 0 10px; }
+  .wahl { display: flex; flex-wrap: wrap; gap: 8px; }
+  .wahl button, .haken label {
+    font: inherit; font-size: 16px; border: 1px solid var(--linie); background: var(--karte); color: var(--text);
+    border-radius: 10px; padding: 10px 14px; cursor: pointer; min-height: 44px; }
+  .wahl.skala button { flex: 1; min-width: 0; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; }
+  .wahl.skala small { font-size: 12px; color: var(--leise); line-height: 1.2; text-align: center; }
+  .wahl button[aria-pressed="true"] { background: var(--akzent-hell); border-color: var(--akzent); }
+  .haken { display: grid; gap: 8px; }
+  .haken label { display: flex; gap: 10px; align-items: flex-start; }
+  .haken input { margin-top: 4px; accent-color: var(--akzent); width: 18px; height: 18px; flex: none; }
+  textarea, input[type=email], input[type=text] {
+    width: 100%; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 10px;
+    border: 1px solid var(--linie); background: var(--karte); color: var(--text); }
+  textarea { min-height: 88px; resize: vertical; }
+  .unten { display: flex; justify-content: space-between; margin-top: 22px; gap: 12px; }
+  .knopf { font: inherit; border: 0; border-radius: 10px; padding: 12px 22px; cursor: pointer;
+           background: var(--akzent); color: var(--karte); font-weight: 600; min-height: 48px; }
+  .knopf:disabled { opacity: .4; cursor: default; }
+  .knopf.zurueck { background: none; color: var(--leise); border: 1px solid var(--linie); font-weight: 400; }
+  .hinweis { font-size: 14px; color: var(--leise); }
+  .einwilligung { margin-top: 20px; }
+  .fehler { color: var(--warn); font-size: 15px; }
+  .block { font-family: ui-monospace, Consolas, monospace; font-size: 12px; word-break: break-all;
+           max-height: 160px; overflow: auto; background: var(--grund); padding: 10px; border-radius: 8px; }
+  footer { text-align: center; margin-top: 28px; font-size: 14px; color: var(--leise); }
+  footer a { color: var(--leise); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <div class="kopf">
+    <div class="fortschritt" aria-hidden="true"><i id="balken"></i></div>
+    <div class="sprache">
+      <button data-sprache="de" aria-pressed="true">DE</button>
+      <button data-sprache="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+  <div class="karte" id="karte" aria-live="polite"></div>
+  <footer>Felix Lind · <a href="https://felix3c.github.io/sprint/impressum.html">Impressum</a> ·
+    <a href="datenschutz.html" id="link-datenschutz">Datenschutz</a></footer>
+</main>
+
+<script src="verschluesseln.js"></script>
+<script>
+// Google Formular als stilles Postfach: bekommt nur den verschlüsselten Block.
+// Leer lassen, solange es kein Formular gibt -> die Seite zeigt den Block zum Kopieren.
+const FORMULAR_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdKyLLj7UaKiSDvYK22njo2k8MBKBQspb92Foyi8rRZ35fyZw/formResponse";
+const FORMULAR_FELD = "entry.2018288949";  // Frage „Block“ (Absatz) in „Fragebogen Eingang“
+
+const TEXT = {
+  de: {
+    titel: "ADHS: Wo hakt es wirklich?",
+    intro: [
+      "Ich baue einen kleinen Begleiter fürs Ohr. Er merkt sich Dinge für dich und sagt im richtigen Moment leise etwas, oder er bleibt still.",
+      "Bevor ich entscheide, was er zuerst kann, will ich von Menschen mit ADHS wissen, wo es wirklich hakt und wie Hilfe sich anfühlen müsste.",
+      "Etwa 8 Minuten. Keine Namen, kein Konto. Deine Antworten werden schon in deinem Browser verschlüsselt, lesen kann sie nur ich auf meinem Laptop."],
+    los: "Los geht's", weiter: "Weiter", zurueck: "Zurück", senden: "Verschlüsselt senden",
+    vorab: "Kurz vorab", diagnose: "Hast du eine ADHS-Diagnose?",
+    diagnoseWahl: { ja: "ja", verdacht: "vermute es", nein: "nein" },
+    alter: "Wie alt bist du?", unter16: "Unter 16? Dann bitte nicht teilnehmen, danke dir trotzdem.",
+    f1: "Wie stark trifft das auf dich zu?",
+    skala: ["gar nicht", "selten", "manchmal", "oft", "fast immer"],
+    f2: "Dürfte ein Begleiter dir dabei helfen?",
+    helfenWahl: { ja: "ja", vielleicht: "vielleicht", nein: "nein, lieber nicht" },
+    f3: "Wie sollte er helfen? (mehrere möglich)", anders: "anders:",
+    schluss: "Zum Schluss",
+    eineSache: "Wenn der Begleiter nur eine Sache könnte, welche wäre es?",
+    zuViel: "Wann wäre er dir zu viel?",
+    testen: "Willst du den Begleiter als eine*r der Ersten ausprobieren?", testenWahl: { ja: "ja, gern", nein: "nein" },
+    email: "Deine E-Mail (wird mitverschlüsselt, nur um dich zum Testen einzuladen):",
+    einwilligung: "Ich willige ein, dass meine Antworten, auch zu ADHS (Gesundheitsdaten), für die Entwicklung des Begleiters ausgewertet werden. Details in der",
+    datenschutz: "Datenschutzerklärung",
+    sendet: "Wird verschlüsselt und gesendet …",
+    danke: "Danke dir.",
+    dankeText: "Deine Antworten sind angekommen, nur als unlesbarer Block. Wenn du eine E-Mail angegeben hast, melde ich mich, sobald es etwas zum Testen gibt.",
+    kopierTitel: "Fast geschafft",
+    kopierText: "Das Senden hat nicht geklappt. Kopier bitte diesen Block und schick ihn an felix.h.lind@gmail.com. Er ist verschlüsselt, niemand außer mir kann ihn lesen.",
+    kopieren: "Block kopieren", kopiert: "Kopiert ✓",
+  },
+  en: {
+    titel: "ADHD: where does it actually snag?",
+    intro: [
+      "I'm building a small companion that sits in your ear. It remembers things for you and quietly says something at the right moment, or stays silent.",
+      "Before I decide what it does first, I want to hear from people with ADHD where things really snag and what help would have to feel like.",
+      "About 8 minutes. No names, no account. Your answers are encrypted in your browser before they leave, and only I can read them, on my laptop."],
+    los: "Let's go", weiter: "Next", zurueck: "Back", senden: "Send encrypted",
+    vorab: "Quickly first", diagnose: "Do you have an ADHD diagnosis?",
+    diagnoseWahl: { ja: "yes", verdacht: "I suspect so", nein: "no" },
+    alter: "How old are you?", unter16: "Under 16? Then please don't take part, thank you anyway.",
+    f1: "How much does this apply to you?",
+    skala: ["not at all", "rarely", "sometimes", "often", "almost always"],
+    f2: "Would you let a companion help you with this?",
+    helfenWahl: { ja: "yes", vielleicht: "maybe", nein: "no, rather not" },
+    f3: "How should it help? (pick any)", anders: "something else:",
+    schluss: "Last bit",
+    eineSache: "If the companion could do only one thing, what should it be?",
+    zuViel: "When would it be too much for you?",
+    testen: "Would you like to be one of the first to try the companion?", testenWahl: { ja: "yes, please", nein: "no" },
+    email: "Your email (encrypted too, only used to invite you to test):",
+    einwilligung: "I consent to my answers, including about ADHD (health data), being analysed to develop the companion. Details in the",
+    datenschutz: "privacy policy",
+    sendet: "Encrypting and sending …",
+    danke: "Thank you.",
+    dankeText: "Your answers arrived, only as an unreadable block. If you left an email, I'll get in touch once there's something to test.",
+    kopierTitel: "Almost done",
+    kopierText: "Sending didn't work. Please copy this block and email it to felix.h.lind@gmail.com. It's encrypted, nobody but me can read it.",
+    kopieren: "Copy block", kopiert: "Copied ✓",
+  },
+};
+
+const THEMEN = [
+  { id: "rsd",
+    de: ["Zurückweisungsempfindlichkeit (RSD)", "Kritik oder vermutete Ablehnung trifft dich viel härter, als die Situation es hergibt.",
+         ["mich bremsen, bevor ich impulsiv antworte", "hinterher ruhig sagen, was wirklich gesagt wurde", "mich an Male erinnern, wo es halb so wild war"]],
+    en: ["Rejection sensitivity (RSD)", "Criticism, or rejection you only suspect, hits you far harder than the situation warrants.",
+         ["stop me before I reply on impulse", "afterwards, calmly tell me what was actually said", "remind me of times it turned out not so bad"]] },
+  { id: "zeit",
+    de: ["Zeitblindheit", "10 Minuten und eine Stunde fühlen sich gleich an.",
+         ["die Uhrzeit ab und zu leise ansagen", "Bescheid geben, wenn ich losmuss, mit Weg eingerechnet", "sagen, wie lange ich schon an etwas sitze"]],
+    en: ["Time blindness", "10 minutes and an hour feel the same.",
+         ["quietly tell me the time now and then", "tell me when I need to leave, travel time included", "tell me how long I've been on something"]] },
+  { id: "hyperfokus",
+    de: ["Hyperfokus", "Du versinkst in etwas und vergisst Essen, Trinken, Termine.",
+         ["sanft unterbrechen für Essen und Trinken", "nur für feste Termine unterbrechen", "nie unterbrechen, erst hinterher sagen, wie lange es war"]],
+    en: ["Hyperfocus", "You sink into something and forget food, water, appointments.",
+         ["gently interrupt for food and water", "only interrupt for fixed appointments", "never interrupt, just tell me afterwards how long it was"]] },
+  { id: "exekutiv",
+    de: ["Exekutive Dysfunktion", "Du weißt, was zu tun ist, kommst aber nicht rein oder findest keine Reihenfolge.",
+         ["den allerersten kleinen Schritt sagen", "die Aufgabe mit mir in Schritte zerlegen", "einfach „dabei sein“, während ich es mache"]],
+    en: ["Executive dysfunction", "You know what to do but can't get started or can't find an order.",
+         ["tell me the very first small step", "break the task into steps with me", "just “be there” while I do it"]] },
+  { id: "mauer",
+    de: ["Wall of Awful", "Um eine Aufgabe hat sich so viel schlechtes Gefühl gestapelt, dass sie wie eine Mauer wirkt.",
+         ["die Mauer ohne Druck benennen", "an Male erinnern, wo ich sie trotzdem geschafft habe", "nur die kleinstmögliche Handlung vorschlagen"]],
+    en: ["Wall of Awful", "So much bad feeling has piled up around a task that it feels like a wall.",
+         ["name the wall, no pressure", "remind me of times I got through it anyway", "suggest only the smallest possible action"]] },
+  { id: "warten",
+    de: ["Warte-Modus", "Ein Termin am Nachmittag legt den ganzen Tag davor lahm.",
+         ["sagen, wie viel Zeit wirklich noch bleibt", "etwas vorschlagen, das in die Lücke passt", "rechtzeitig Bescheid geben, damit ich bis dahin loslassen kann"]],
+    en: ["Waiting mode", "One appointment in the afternoon freezes the whole day before it.",
+         ["tell me how much time is really left", "suggest something that fits the gap", "give me a heads-up in time, so I can let go until then"]] },
+  { id: "stapel",
+    de: ["Doom Piles", "Stapel aus „kümmer ich mich später drum“.",
+         ["sich merken, was auf welchem Stapel liegt", "ab und zu ein einzelnes Teil daraus vorschlagen", "nachfragen, wenn etwas neu auf einen Stapel kommt"]],
+    en: ["Doom piles", "Piles of “I'll deal with it later”.",
+         ["remember what's in which pile", "now and then suggest one single item from it", "check in when something new lands on a pile"]] },
+  { id: "reden",
+    de: ["Info-Dumping und Unterbrechen", "Du redest lange oder fällst anderen ins Wort, damit der Gedanke nicht verloren geht.",
+         ["mir einen Gedanken merken, damit ich nicht dazwischenreden muss", "ein leises Zeichen, wenn ich schon lange rede", "hinterher sagen, ob der andere noch etwas sagen wollte"]],
+    en: ["Info-dumping and interrupting", "You talk for a long time or cut in so the thought doesn't get lost.",
+         ["hold a thought for me so I don't have to cut in", "a quiet signal when I've been talking a while", "afterwards, tell me if the other person wanted to say something"]] },
+  { id: "masking",
+    de: ["Masking", "Du spielst „normal“ und bist danach leer.",
+         ["nach einem Tag voller Menschen an eine Pause erinnern", "hinterher fragen, wie es mir geht", "einfach zuhören, ohne dass ich mich verstellen muss"]],
+    en: ["Masking", "You play “normal” and feel empty afterwards.",
+         ["remind me to take a break after a day full of people", "ask me afterwards how I'm doing", "just listen, without me having to pretend"]] },
+  { id: "augen",
+    de: ["Aus den Augen, aus dem Sinn", "Was du nicht siehst, existiert nicht, egal ob Dinge, Aufgaben oder Menschen.",
+         ["sich merken, wo ich etwas hingelegt habe", "an Dinge erinnern, die ich gerade nicht sehe (Wäsche, Rechnung)", "an Menschen erinnern, bei denen ich mich melden wollte"]],
+    en: ["Out of sight, out of mind", "What you can't see doesn't exist, whether things, tasks or people.",
+         ["remember where I put something", "remind me of things I can't see right now (laundry, a bill)", "remind me of people I wanted to get back to"]] },
+  { id: "interesse",
+    de: ["Interessengesteuertes Nervensystem", "Wichtigkeit allein bringt dich nicht in Gang, nur Interesse, Neues, Herausforderung oder Dringlichkeit.",
+         ["langweilige Aufgaben als Spiel oder Wette verpacken", "Zeitdruck machen, Countdown", "die Aufgabe mit etwas verbinden, das mich interessiert"]],
+    en: ["Interest-based nervous system", "Importance alone doesn't get you going, only interest, novelty, challenge or urgency.",
+         ["turn boring tasks into a game or a bet", "add time pressure, a countdown", "link the task to something I'm interested in"]] },
+  { id: "nacht",
+    de: ["Revenge Bedtime Procrastination", "Du bleibst spät wach, um dir Zeit für dich zurückzuholen.",
+         ["sagen, wie spät es ist und wann ich aufstehen muss", "ab einer Uhrzeit an Schlaf erinnern", "nur erinnern, wenn ich das vorher so abgemacht habe"]],
+    en: ["Revenge bedtime procrastination", "You stay up late to claw back time for yourself.",
+         ["tell me how late it is and when I have to get up", "remind me about sleep after a set time", "only remind me if I agreed to that beforehand"]] },
+  { id: "aufschieben",
+    de: ["Aufschieben", "Fristen rücken näher, und du fängst trotzdem nicht an.",
+         ["Fristen früh und mehrmals ansagen", "fragen, was an der Aufgabe gerade schwer ist", "mit mir einen Startzeitpunkt abmachen und dann daran erinnern"]],
+    en: ["Procrastination", "Deadlines get closer and you still don't start.",
+         ["announce deadlines early and more than once", "ask what's hard about the task right now", "agree on a start time with me, then remind me"]] },
+];
+const WEGE = ["a", "b", "c"];
+const ALTER = ["16-24", "25-34", "35-49", "50+"];
+
+let sprache = "de";
+let schritt = 0;  // 0 Start, 1 Vorab, 2..14 Themen, 15 Schluss
+const antwort = { diagnose: null, alter: null, themen: {}, eine_sache: "", zu_viel: "", testen: null, email: "", einwilligung: false };
+let ende = null;  // {art: "danke"|"kopieren", block}
+
+const karte = document.getElementById("karte");
+const t = () => TEXT[sprache];
+const esc = (s) => String(s).replace(/[&<>"]/g, (z) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[z]));
+
+function wahlKnoepfe(name, optionen, gewaehlt, klasse = "") {
+  return `<div class="wahl ${klasse}" role="group">` + optionen.map(([wert, beschriftung]) =>
+    `<button type="button" data-name="${name}" data-wert="${esc(wert)}" aria-pressed="${String(gewaehlt) === String(wert)}">${beschriftung}</button>`
+  ).join("") + "</div>";
+}
+
+function themaDaten(id) {
+  return antwort.themen[id] || (antwort.themen[id] = { stark: null, helfen: null, wie: [], anders: "" });
+}
+
+function darfWeiter() {
+  if (schritt === 1) return Boolean(antwort.diagnose && antwort.alter);
+  if (schritt >= 2 && schritt <= 14) {
+    const d = themaDaten(THEMEN[schritt - 2].id);
+    return d.stark !== null && Boolean(d.helfen);
+  }
+  if (schritt === 15) return antwort.einwilligung;
+  return true;
+}
+
+function zeichnen() {
+  document.getElementById("balken").style.width = `${Math.min(schritt, 15) / 15 * 100}%`;
+  document.documentElement.lang = sprache;
+  document.title = t().titel;
+  document.getElementById("link-datenschutz").textContent = sprache === "de" ? "Datenschutz" : "Privacy";
+  let html = "";
+
+  if (ende) {
+    html = ende.art === "danke"
+      ? `<h1>${t().danke}</h1><p>${t().dankeText}</p>`
+      : `<h1>${t().kopierTitel}</h1><p>${t().kopierText}</p><div class="block" id="block">${esc(ende.block)}</div>
+         <div class="unten"><span></span><button class="knopf" id="kopieren">${t().kopieren}</button></div>`;
+  } else if (schritt === 0) {
+    html = `<h1>${t().titel}</h1>` + t().intro.map((p) => `<p>${p}</p>`).join("");
+  } else if (schritt === 1) {
+    html = `<h2>${t().vorab}</h2>
+      <p class="frage">${t().diagnose}</p>${wahlKnoepfe("diagnose", Object.entries(t().diagnoseWahl), antwort.diagnose)}
+      <p class="frage">${t().alter}</p>${wahlKnoepfe("alter", ALTER.map((a) => [a, a]), antwort.alter)}
+      <p class="hinweis">${t().unter16}</p>`;
+  } else if (schritt <= 14) {
+    const thema = THEMEN[schritt - 2];
+    const [name, erklaer, wege] = thema[sprache];
+    const d = themaDaten(thema.id);
+    html = `<p class="hinweis">${schritt - 1} / 13</p><h2>${name}</h2><p class="erklaer">${erklaer}</p>
+      <p class="frage">${t().f1}</p>${wahlKnoepfe("stark", t().skala.map((s, i) => [i, `${i}<small>${s}</small>`]), d.stark, "skala")}
+      <p class="frage">${t().f2}</p>${wahlKnoepfe("helfen", Object.entries(t().helfenWahl), d.helfen)}`;
+    if (d.helfen && d.helfen !== "nein") {
+      html += `<p class="frage">${t().f3}</p><div class="haken">` + WEGE.map((w, i) =>
+        `<label><input type="checkbox" data-weg="${w}" ${d.wie.includes(w) ? "checked" : ""}>${wege[i]}</label>`).join("") +
+        `<input type="text" id="anders" placeholder="${t().anders}" aria-label="${t().anders}" value="${esc(d.anders)}" maxlength="500"></div>`;
+    }
+  } else {
+    html = `<h2>${t().schluss}</h2>
+      <p class="frage">${t().eineSache}</p><textarea id="eine_sache" maxlength="2000">${esc(antwort.eine_sache)}</textarea>
+      <p class="frage">${t().zuViel}</p><textarea id="zu_viel" maxlength="2000">${esc(antwort.zu_viel)}</textarea>
+      <p class="frage">${t().testen}</p>${wahlKnoepfe("testen", Object.entries(t().testenWahl), antwort.testen)}
+      ${antwort.testen === "ja" ? `<p class="frage">${t().email}</p><input type="email" id="email" value="${esc(antwort.email)}" maxlength="200" autocomplete="email">` : ""}
+      <div class="haken einwilligung"><label><input type="checkbox" id="einwilligung" ${antwort.einwilligung ? "checked" : ""}>
+        <span>${t().einwilligung} <a href="datenschutz.html" target="_blank">${t().datenschutz}</a>.</span></label></div>
+      <p class="fehler" id="fehler" hidden></p>`;
+  }
+
+  if (!ende) {
+    const vorKnopf = schritt === 15 ? t().senden : schritt === 0 ? t().los : t().weiter;
+    html += `<div class="unten">
+      ${schritt > 0 ? `<button class="knopf zurueck" id="zurueck">${t().zurueck}</button>` : "<span></span>"}
+      <button class="knopf" id="weiter" ${darfWeiter() ? "" : "disabled"}>${vorKnopf}</button></div>`;
+  }
+  karte.innerHTML = html;
+}
+
+function textfelderMerken() {
+  for (const id of ["eine_sache", "zu_viel", "email"]) {
+    const feld = document.getElementById(id);
+    if (feld) antwort[id] = feld.value.trim();
+  }
+  const anders = document.getElementById("anders");
+  if (anders) themaDaten(THEMEN[schritt - 2].id).anders = anders.value.trim();
+}
+
+function gesamt() {
+  return {
+    v: 1, sprache, datum: new Date().toISOString().slice(0, 10),
+    diagnose: antwort.diagnose, alter: antwort.alter,
+    themen: Object.fromEntries(Object.entries(antwort.themen).map(([id, d]) =>
+      [id, d.helfen === "nein" ? { stark: d.stark, helfen: d.helfen, wie: [], anders: "" } : d])),
+    eine_sache: antwort.eine_sache, zu_viel: antwort.zu_viel,
+    testen: antwort.testen === "ja", email: antwort.testen === "ja" ? antwort.email : "",
+  };
+}
+
+async function senden() {
+  const knopf = document.getElementById("weiter");
+  knopf.disabled = true;
+  knopf.textContent = t().sendet;
+  let block;
+  try {
+    block = await verschluesseln(JSON.stringify(gesamt()), await (await fetch("oeffentlich.pem")).text());
+  } catch (e) {
+    const fehler = document.getElementById("fehler");
+    fehler.hidden = false;
+    fehler.textContent = String(e);
+    knopf.disabled = false;
+    knopf.textContent = t().senden;
+    return;
+  }
+  try {
+    if (!FORMULAR_URL) throw new Error("kein Formular");
+    await fetch(FORMULAR_URL, { method: "POST", mode: "no-cors",
+      body: new URLSearchParams({ [FORMULAR_FELD]: block }) });
+    ende = { art: "danke" };
+  } catch {
+    ende = { art: "kopieren", block };
+  }
+  window.gesendet = block;
+  zeichnen();
+}
+
+karte.addEventListener("click", async (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  if (b.dataset.name) {
+    textfelderMerken();
+    const wert = b.dataset.wert;
+    if (b.dataset.name === "diagnose") antwort.diagnose = wert;
+    else if (b.dataset.name === "alter") antwort.alter = wert;
+    else if (b.dataset.name === "testen") antwort.testen = wert;
+    else if (b.dataset.name === "stark") themaDaten(THEMEN[schritt - 2].id).stark = Number(wert);
+    else if (b.dataset.name === "helfen") themaDaten(THEMEN[schritt - 2].id).helfen = wert;
+    zeichnen();
+  } else if (b.id === "weiter") {
+    textfelderMerken();
+    if (schritt === 15) return senden();
+    schritt++;
+    zeichnen();
+    window.scrollTo(0, 0);
+  } else if (b.id === "zurueck") {
+    textfelderMerken();
+    schritt--;
+    zeichnen();
+  } else if (b.id === "kopieren") {
+    await navigator.clipboard.writeText(ende.block);
+    b.textContent = t().kopiert;
+  }
+});
+
+karte.addEventListener("change", (e) => {
+  if (e.target.dataset.weg) {
+    const d = themaDaten(THEMEN[schritt - 2].id);
+    d.wie = e.target.checked ? [...d.wie, e.target.dataset.weg] : d.wie.filter((w) => w !== e.target.dataset.weg);
+  } else if (e.target.id === "einwilligung") {
+    antwort.einwilligung = e.target.checked;
+    document.getElementById("weiter").disabled = !darfWeiter();
+  }
+});
+
+document.querySelector(".sprache").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  textfelderMerken();
+  sprache = b.dataset.sprache;
+  document.querySelectorAll(".sprache button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  zeichnen();
+});
+
+if ((navigator.language || "").toLowerCase().startsWith("en")) {
+  document.querySelector('[data-sprache="en"]').click();
+} else {
+  zeichnen();
+}
+</script>
+</body>
+</html>
