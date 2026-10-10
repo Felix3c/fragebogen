@@ -6,19 +6,32 @@
 <title>Datenschutz — ADHS-Fragebogen</title>
 <meta name="robots" content="noindex">
 <style>
-  :root { --grund: #f6f3ee; --text: #22201c; --leise: #6b665e; }
-  @media (prefers-color-scheme: dark) { :root { --grund: #1a1917; --text: #ece8e1; --leise: #a39d93; } }
+  :root { --grund: #f6f3ee; --text: #22201c; --leise: #6b665e; --linie: #ddd6ca; }
+  @media (prefers-color-scheme: dark) { :root { --grund: #1a1917; --text: #ece8e1; --leise: #a39d93; --linie: #3a3833; } }
   body { margin: 0; background: var(--grund); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
   main { max-width: 680px; margin: 0 auto; padding: 24px 16px 64px; }
-  h1 { font-size: 24px; } h2 { font-size: 18px; margin-top: 28px; }
+  .kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  h1 { font-size: 24px; margin: 0; } h2 { font-size: 18px; margin-top: 28px; }
   a { color: inherit; } .leise { color: var(--leise); font-size: 14px; }
+  .sprache { flex: none; }
+  .sprache button { background: none; border: 1px solid var(--linie); color: var(--leise);
+                     padding: 4px 10px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 14px; }
+  .sprache button[aria-pressed="true"] { color: var(--text); border-color: var(--text); }
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <main>
-<h1>Datenschutzerklärung zum ADHS-Fragebogen</h1>
-<p class="leise">Stand: 29.09.2026 · <a href="#en">English summary below</a></p>
+<div class="kopf">
+  <h1 id="titel">Datenschutzerklärung zum ADHS-Fragebogen</h1>
+  <div class="sprache">
+    <button type="button" data-sprache="de" aria-pressed="true">DE</button>
+    <button type="button" data-sprache="en" aria-pressed="false">EN</button>
+  </div>
+</div>
+<p class="leise" id="stand">Stand: 29.09.2026</p>
 
+<div id="inhalt-de">
 <h2>1. Verantwortlicher</h2>
 <p>Felix Lind<br>Euskirchener Straße 55<br>40547 Düsseldorf<br>E-Mail: felix.h.lind@gmail.com</p>
 
@@ -48,11 +61,77 @@
 
 <h2>9. Beschwerderecht</h2>
 <p>Du kannst dich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO). Zuständig ist die Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen (LDI NRW), Kavalleriestraße 2–4, 40213 Düsseldorf, www.ldi.nrw.de.</p>
+</div>
 
-<h2 id="en">English summary</h2>
-<p>Controller: Felix Lind, address above, felix.h.lind@gmail.com. The questionnaire collects your ratings on 13 ADHD-related topics, whether you have or suspect an ADHD diagnosis (health data, Art. 9 GDPR), your age group, free-text answers, language, date, and optionally your email. Everything is encrypted in your browser before sending; only I can decrypt it, on my laptop. The encrypted block is sent via Google Forms (Google Ireland Ltd.), which sees technical data such as your IP address but not your answers. Legal basis is your explicit consent (Art. 9(2)(a), Art. 6(1)(a) GDPR), which you can withdraw at any time by email. Data is deleted after analysis, by 31 March 2027 at the latest; only aggregated figures are ever published. You have the rights of access, rectification, erasure, restriction and portability, and may complain to the LDI NRW. Hosted on GitHub Pages; no cookies, no tracking.</p>
+<div id="inhalt-en" hidden>
+<h2>1. Controller</h2>
+<p>Felix Lind<br>Euskirchener Straße 55<br>40547 Düsseldorf, Germany<br>Email: felix.h.lind@gmail.com</p>
 
-<p class="leise"><a href="index.html">Zurück zum Fragebogen</a> · <a href="https://felix3c.github.io/sprint/impressum.html">Impressum</a></p>
+<h2>2. What the questionnaire collects</h2>
+<p>Your ratings on 13 everyday topics around ADHD, whether you have or suspect an ADHD diagnosis, your age group, your free-text answers, the language you chose, and the date (day only). Voluntary and optional: your email address, if you'd like to become a tester. There are no names, accounts, or cookies.</p>
+<p>The diagnosis field and the answers to ADHD topics are health data within the meaning of Art. 9 GDPR.</p>
+
+<h2>3. Encryption in the browser</h2>
+<p>Before anything leaves your browser, all answers are encrypted on your device (AES-256-GCM, with the key for it wrapped using RSA-OAEP-3072). The matching private key exists only on my laptop and is never online. Nobody along the transmission path, including Google or GitHub, can read the answers.</p>
+
+<h2>4. Transmission via Google Forms</h2>
+<p>The encrypted block is sent to a Google Form and stored in a Google spreadsheet that only I can access. Provider: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland. Google processes technically necessary data such as your IP address and the time; it does not see the content of your answers. Transfer to the US is possible; Google is certified under the EU-U.S. Data Privacy Framework. Google's privacy notice: policies.google.com/privacy.</p>
+
+<h2>5. Purpose and legal basis</h2>
+<p>I analyse the answers to decide which features a companion for people with ADHD should get first. I only use the email address to write to you once, if there's something to test.</p>
+<p>The legal basis is your explicit consent (Art. 9(2)(a) and Art. 6(1)(a) GDPR), which you give by ticking a box before sending. Taking part is voluntary.</p>
+
+<h2>6. Storage period</h2>
+<p>I delete the encrypted blocks in the Google spreadsheet as soon as they're decrypted and backed up on my laptop, by 31 March 2027 at the latest. I delete the decrypted answers once the analysis is finished, by 31 March 2027 at the latest. At most, aggregated figures are ever published, never individual answers. I delete the email address after the test invitation, or right away if you ask me to.</p>
+
+<h2>7. Withdrawal and your rights</h2>
+<p>You can withdraw your consent at any time, with effect for the future, by email. Since the questionnaire is anonymous, I can only match individual answers to you if you provided an email address; if so, mention it in your message.</p>
+<p>You have the right to access (Art. 15), rectification (Art. 16), erasure (Art. 17), restriction (Art. 18), and data portability (Art. 20 GDPR). An email to the address above is enough.</p>
+
+<h2>8. Hosting</h2>
+<p>This page is hosted on GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA; in Europe GitHub B.V., Prins Bernhardplein 200, 1097 JB Amsterdam). When you visit, GitHub processes technically necessary server logs (including IP address, time, browser) on the basis of Art. 6(1)(f) GDPR. GitHub is certified under the EU-U.S. Data Privacy Framework. This page sets no cookies, uses no tracking, and loads no fonts or scripts from third parties.</p>
+
+<h2>9. Right to complain</h2>
+<p>You can complain to a data protection supervisory authority (Art. 77 GDPR). The competent authority is the Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen (LDI NRW), Kavalleriestraße 2–4, 40213 Düsseldorf, Germany, www.ldi.nrw.de.</p>
+</div>
+
+<p class="leise" id="fuss"><a href="index.html" id="link-zurueck">Zurück zum Fragebogen</a> · <a href="https://felix3c.github.io/sprint/impressum.html">Impressum</a></p>
 </main>
+
+<script>
+const TEXT_FUSS = {
+  de: { titel: "Datenschutzerklärung zum ADHS-Fragebogen", stand: "Stand: 29.09.2026",
+        zurueck: "Zurück zum Fragebogen" },
+  en: { titel: "Privacy policy for the ADHD questionnaire", stand: "Last updated: 29 September 2026",
+        zurueck: "Back to the questionnaire" },
+};
+
+function sprachSetzen(sprache) {
+  const t = TEXT_FUSS[sprache];
+  document.documentElement.lang = sprache;
+  document.title = sprache === "de" ? "Datenschutz — ADHS-Fragebogen" : "Privacy — ADHD questionnaire";
+  document.getElementById("titel").textContent = t.titel;
+  document.getElementById("stand").textContent = t.stand;
+  document.getElementById("inhalt-de").hidden = sprache !== "de";
+  document.getElementById("inhalt-en").hidden = sprache !== "en";
+  const zurueck = document.getElementById("link-zurueck");
+  zurueck.textContent = t.zurueck;
+  zurueck.href = sprache === "en" ? "index.html?lang=en" : "index.html";
+  document.querySelectorAll(".sprache button").forEach((b) =>
+    b.setAttribute("aria-pressed", String(b.dataset.sprache === sprache)));
+}
+
+document.querySelector(".sprache").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  sprachSetzen(b.dataset.sprache);
+});
+
+const sprachParam = (new URLSearchParams(location.search).get("lang") || "").toLowerCase();
+const start = sprachParam === "en" ? "en"
+  : sprachParam === "de" ? "de"
+  : (navigator.language || "").toLowerCase().startsWith("en") ? "en" : "de";
+sprachSetzen(start);
+</script>
 </body>
 </html>

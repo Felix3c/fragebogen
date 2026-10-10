@@ -244,6 +244,7 @@ function zeichnen() {
   document.documentElement.lang = sprache;
   document.title = t().titel;
   document.getElementById("link-datenschutz").textContent = sprache === "de" ? "Datenschutz" : "Privacy";
+  document.getElementById("link-datenschutz").href = sprache === "en" ? "datenschutz.html?lang=en" : "datenschutz.html";
   let html = "";
 
   if (ende) {
@@ -277,7 +278,7 @@ function zeichnen() {
       <p class="frage">${t().testen}</p>${wahlKnoepfe("testen", Object.entries(t().testenWahl), antwort.testen)}
       ${antwort.testen === "ja" ? `<p class="frage">${t().email}</p><input type="email" id="email" value="${esc(antwort.email)}" maxlength="200" autocomplete="email">` : ""}
       <div class="haken einwilligung"><label><input type="checkbox" id="einwilligung" ${antwort.einwilligung ? "checked" : ""}>
-        <span>${t().einwilligung} <a href="datenschutz.html" target="_blank">${t().datenschutz}</a>.</span></label></div>
+        <span>${t().einwilligung} <a href="datenschutz.html${sprache === "en" ? "?lang=en" : ""}" target="_blank">${t().datenschutz}</a>.</span></label></div>
       <p class="fehler" id="fehler" hidden></p>`;
   }
 
@@ -384,7 +385,10 @@ document.querySelector(".sprache").addEventListener("click", (e) => {
   zeichnen();
 });
 
-if ((navigator.language || "").toLowerCase().startsWith("en")) {
+const sprachParam = (new URLSearchParams(location.search).get("lang") || "").toLowerCase();
+const englischStarten = sprachParam === "en" ||
+  (sprachParam !== "de" && (navigator.language || "").toLowerCase().startsWith("en"));
+if (englischStarten) {
   document.querySelector('[data-sprache="en"]').click();
 } else {
   zeichnen();
