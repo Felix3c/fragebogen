@@ -81,11 +81,11 @@ const FORMULAR_FELD = "entry.2018288949";  // Frage „Block“ (Absatz) in „F
 
 const TEXT = {
   de: {
-    titel: "ADHS: Wo hakt es wirklich?",
+    titel: "Aus den Augen, aus dem Sinn?",
     intro: [
-      "Ich baue einen kleinen Begleiter fürs Ohr. Er merkt sich Dinge für dich und sagt im richtigen Moment leise etwas, oder er bleibt still.",
-      "Bevor ich entscheide, was er zuerst kann, will ich von Menschen mit ADHS wissen, wo es wirklich hakt und wie Hilfe sich anfühlen müsste.",
-      "Etwa 8 Minuten. Keine Namen, kein Konto. Deine Antworten werden schon in deinem Browser verschlüsselt, lesen kann sie nur ich auf meinem Laptop."],
+      "Ich baue einen kleinen Begleiter. Du lässt Dinge fallen, wann sie dir einfallen. Er meldet sich von selbst, im richtigen Moment, mit genau dem einen Ding, das dann dran ist.",
+      "Dieser Fragebogen ist für Menschen, bei denen Dinge aus den Augen, aus dem Sinn sind: Aufgaben, Menschen, Einfälle. Mit oder ohne ADHS-Diagnose.",
+      "Etwa 3 Minuten. Keine Namen, kein Konto. Deine Antworten werden schon in deinem Browser verschlüsselt, lesen kann sie nur ich auf meinem Laptop."],
     los: "Los geht's", weiter: "Weiter", zurueck: "Zurück", senden: "Verschlüsselt senden",
     vorab: "Kurz vorab", diagnose: "Hast du eine ADHS-Diagnose?",
     diagnoseWahl: { ja: "ja", verdacht: "vermute es", nein: "nein" },
@@ -96,6 +96,7 @@ const TEXT = {
     helfenWahl: { ja: "ja", vielleicht: "vielleicht", nein: "nein, lieber nicht" },
     f3: "Wie sollte er helfen? (mehrere möglich)", anders: "anders:",
     schluss: "Zum Schluss",
+    nichtWeg: "Welche Erinnerung drückst du nicht weg, und warum?",
     eineSache: "Wenn der Begleiter nur eine Sache könnte, welche wäre es?",
     zuViel: "Wann wäre er dir zu viel?",
     testen: "Willst du den Begleiter als eine*r der Ersten ausprobieren?", testenWahl: { ja: "ja, gern", nein: "nein" },
@@ -110,11 +111,11 @@ const TEXT = {
     kopieren: "Block kopieren", kopiert: "Kopiert ✓",
   },
   en: {
-    titel: "ADHD: where does it actually snag?",
+    titel: "Out of sight, out of mind?",
     intro: [
-      "I'm building a small companion that sits in your ear. It remembers things for you and quietly says something at the right moment, or stays silent.",
-      "Before I decide what it does first, I want to hear from people with ADHD where things really snag and what help would have to feel like.",
-      "About 8 minutes. No names, no account. Your answers are encrypted in your browser before they leave, and only I can read them, on my laptop."],
+      "I'm building a small companion. You drop things whenever they occur to you. It speaks up by itself, at the right moment, with exactly the one thing that's due then.",
+      "This survey is for people for whom things are out of sight, out of mind: tasks, people, sudden thoughts. With or without an ADHD diagnosis.",
+      "About 3 minutes. No names, no account. Your answers are encrypted in your browser before they leave, and only I can read them, on my laptop."],
     los: "Let's go", weiter: "Next", zurueck: "Back", senden: "Send encrypted",
     vorab: "Quickly first", diagnose: "Do you have an ADHD diagnosis?",
     diagnoseWahl: { ja: "yes", verdacht: "I suspect so", nein: "no" },
@@ -125,6 +126,7 @@ const TEXT = {
     helfenWahl: { ja: "yes", vielleicht: "maybe", nein: "no, rather not" },
     f3: "How should it help? (pick any)", anders: "something else:",
     schluss: "Last bit",
+    nichtWeg: "Which reminder do you not swipe away, and why?",
     eineSache: "If the companion could do only one thing, what should it be?",
     zuViel: "When would it be too much for you?",
     testen: "Would you like to be one of the first to try the companion?", testenWahl: { ja: "yes, please", nein: "no" },
@@ -141,78 +143,29 @@ const TEXT = {
 };
 
 const THEMEN = [
-  { id: "rsd",
-    de: ["Zurückweisungsempfindlichkeit (RSD)", "Kritik oder vermutete Ablehnung trifft dich viel härter, als die Situation es hergibt.",
-         ["mich bremsen, bevor ich impulsiv antworte", "hinterher ruhig sagen, was wirklich gesagt wurde", "mich an Male erinnern, wo es halb so wild war"]],
-    en: ["Rejection sensitivity (RSD)", "Criticism, or rejection you only suspect, hits you far harder than the situation warrants.",
-         ["stop me before I reply on impulse", "afterwards, calmly tell me what was actually said", "remind me of times it turned out not so bad"]] },
-  { id: "zeit",
-    de: ["Zeitblindheit", "10 Minuten und eine Stunde fühlen sich gleich an.",
-         ["die Uhrzeit ab und zu leise ansagen", "Bescheid geben, wenn ich losmuss, mit Weg eingerechnet", "sagen, wie lange ich schon an etwas sitze"]],
-    en: ["Time blindness", "10 minutes and an hour feel the same.",
-         ["quietly tell me the time now and then", "tell me when I need to leave, travel time included", "tell me how long I've been on something"]] },
-  { id: "hyperfokus",
-    de: ["Hyperfokus", "Du versinkst in etwas und vergisst Essen, Trinken, Termine.",
-         ["sanft unterbrechen für Essen und Trinken", "nur für feste Termine unterbrechen", "nie unterbrechen, erst hinterher sagen, wie lange es war"]],
-    en: ["Hyperfocus", "You sink into something and forget food, water, appointments.",
-         ["gently interrupt for food and water", "only interrupt for fixed appointments", "never interrupt, just tell me afterwards how long it was"]] },
-  { id: "exekutiv",
-    de: ["Exekutive Dysfunktion", "Du weißt, was zu tun ist, kommst aber nicht rein oder findest keine Reihenfolge.",
-         ["den allerersten kleinen Schritt sagen", "die Aufgabe mit mir in Schritte zerlegen", "einfach „dabei sein“, während ich es mache"]],
-    en: ["Executive dysfunction", "You know what to do but can't get started or can't find an order.",
-         ["tell me the very first small step", "break the task into steps with me", "just “be there” while I do it"]] },
-  { id: "mauer",
-    de: ["Wall of Awful", "Um eine Aufgabe hat sich so viel schlechtes Gefühl gestapelt, dass sie wie eine Mauer wirkt.",
-         ["die Mauer ohne Druck benennen", "an Male erinnern, wo ich sie trotzdem geschafft habe", "nur die kleinstmögliche Handlung vorschlagen"]],
-    en: ["Wall of Awful", "So much bad feeling has piled up around a task that it feels like a wall.",
-         ["name the wall, no pressure", "remind me of times I got through it anyway", "suggest only the smallest possible action"]] },
-  { id: "warten",
-    de: ["Warte-Modus", "Ein Termin am Nachmittag legt den ganzen Tag davor lahm.",
-         ["sagen, wie viel Zeit wirklich noch bleibt", "etwas vorschlagen, das in die Lücke passt", "rechtzeitig Bescheid geben, damit ich bis dahin loslassen kann"]],
-    en: ["Waiting mode", "One appointment in the afternoon freezes the whole day before it.",
-         ["tell me how much time is really left", "suggest something that fits the gap", "give me a heads-up in time, so I can let go until then"]] },
-  { id: "stapel",
-    de: ["Doom Piles", "Stapel aus „kümmer ich mich später drum“.",
-         ["sich merken, was auf welchem Stapel liegt", "ab und zu ein einzelnes Teil daraus vorschlagen", "nachfragen, wenn etwas neu auf einen Stapel kommt"]],
-    en: ["Doom piles", "Piles of “I'll deal with it later”.",
-         ["remember what's in which pile", "now and then suggest one single item from it", "check in when something new lands on a pile"]] },
-  { id: "reden",
-    de: ["Info-Dumping und Unterbrechen", "Du redest lange oder fällst anderen ins Wort, damit der Gedanke nicht verloren geht.",
-         ["mir einen Gedanken merken, damit ich nicht dazwischenreden muss", "ein leises Zeichen, wenn ich schon lange rede", "hinterher sagen, ob der andere noch etwas sagen wollte"]],
-    en: ["Info-dumping and interrupting", "You talk for a long time or cut in so the thought doesn't get lost.",
-         ["hold a thought for me so I don't have to cut in", "a quiet signal when I've been talking a while", "afterwards, tell me if the other person wanted to say something"]] },
-  { id: "masking",
-    de: ["Masking", "Du spielst „normal“ und bist danach leer.",
-         ["nach einem Tag voller Menschen an eine Pause erinnern", "hinterher fragen, wie es mir geht", "einfach zuhören, ohne dass ich mich verstellen muss"]],
-    en: ["Masking", "You play “normal” and feel empty afterwards.",
-         ["remind me to take a break after a day full of people", "ask me afterwards how I'm doing", "just listen, without me having to pretend"]] },
   { id: "augen",
     de: ["Aus den Augen, aus dem Sinn", "Was du nicht siehst, existiert nicht, egal ob Dinge, Aufgaben oder Menschen.",
          ["sich merken, wo ich etwas hingelegt habe", "an Dinge erinnern, die ich gerade nicht sehe (Wäsche, Rechnung)", "an Menschen erinnern, bei denen ich mich melden wollte"]],
     en: ["Out of sight, out of mind", "What you can't see doesn't exist, whether things, tasks or people.",
          ["remember where I put something", "remind me of things I can't see right now (laundry, a bill)", "remind me of people I wanted to get back to"]] },
-  { id: "interesse",
-    de: ["Interessengesteuertes Nervensystem", "Wichtigkeit allein bringt dich nicht in Gang, nur Interesse, Neues, Herausforderung oder Dringlichkeit.",
-         ["langweilige Aufgaben als Spiel oder Wette verpacken", "Zeitdruck machen, Countdown", "die Aufgabe mit etwas verbinden, das mich interessiert"]],
-    en: ["Interest-based nervous system", "Importance alone doesn't get you going, only interest, novelty, challenge or urgency.",
-         ["turn boring tasks into a game or a bet", "add time pressure, a countdown", "link the task to something I'm interested in"]] },
-  { id: "nacht",
-    de: ["Revenge Bedtime Procrastination", "Du bleibst spät wach, um dir Zeit für dich zurückzuholen.",
-         ["sagen, wie spät es ist und wann ich aufstehen muss", "ab einer Uhrzeit an Schlaf erinnern", "nur erinnern, wenn ich das vorher so abgemacht habe"]],
-    en: ["Revenge bedtime procrastination", "You stay up late to claw back time for yourself.",
-         ["tell me how late it is and when I have to get up", "remind me about sleep after a set time", "only remind me if I agreed to that beforehand"]] },
-  { id: "aufschieben",
-    de: ["Aufschieben", "Fristen rücken näher, und du fängst trotzdem nicht an.",
-         ["Fristen früh und mehrmals ansagen", "fragen, was an der Aufgabe gerade schwer ist", "mit mir einen Startzeitpunkt abmachen und dann daran erinnern"]],
-    en: ["Procrastination", "Deadlines get closer and you still don't start.",
-         ["announce deadlines early and more than once", "ask what's hard about the task right now", "agree on a start time with me, then remind me"]] },
+  { id: "warten",
+    de: ["Warte-Modus", "Ein Termin am Nachmittag legt den ganzen Tag davor lahm.",
+         ["sagen, wie viel Zeit wirklich noch bleibt", "etwas vorschlagen, das in die Lücke passt", "rechtzeitig Bescheid geben, damit ich bis dahin loslassen kann"]],
+    en: ["Waiting mode", "One appointment in the afternoon freezes the whole day before it.",
+         ["tell me how much time is really left", "suggest something that fits the gap", "give me a heads-up in time, so I can let go until then"]] },
+  { id: "einfall",
+    de: ["Einfälle im Fokus", "Mitten in etwas fällt dir etwas ein. Du sagst dir: gleich. Und dann ist es weg.",
+         ["den Einfall mit einem Wort annehmen, ohne dass ich rausmuss", "ihn mir sagen, sobald ich fertig bin", "ihn mir erst sagen, wenn er wirklich dran ist (Ort, Zeit, Mensch)"]],
+    en: ["Thoughts that pop up mid-focus", "In the middle of something, a thought pops up. You tell yourself: in a moment. Then it's gone.",
+         ["take the thought with one word, without pulling me out", "tell me as soon as I'm done", "only bring it up when it's actually due (place, time, person)"]] },
 ];
 const WEGE = ["a", "b", "c"];
 const ALTER = ["16-24", "25-34", "35-49", "50+"];
+const LETZT = THEMEN.length + 2;  // Schritt der Schlussseite
 
 let sprache = "de";
-let schritt = 0;  // 0 Start, 1 Vorab, 2..14 Themen, 15 Schluss
-const antwort = { diagnose: null, alter: null, themen: {}, eine_sache: "", zu_viel: "", testen: null, email: "", einwilligung: false };
+let schritt = 0;  // 0 Start, 1 Vorab, 2..LETZT-1 Themen, LETZT Schluss
+const antwort = { diagnose: null, alter: null, themen: {}, nicht_weg: "", eine_sache: "", zu_viel: "", testen: null, email: "", einwilligung: false };
 let ende = null;  // {art: "danke"|"kopieren", block}
 
 const karte = document.getElementById("karte");
@@ -231,16 +184,16 @@ function themaDaten(id) {
 
 function darfWeiter() {
   if (schritt === 1) return Boolean(antwort.diagnose && antwort.alter);
-  if (schritt >= 2 && schritt <= 14) {
+  if (schritt >= 2 && schritt < LETZT) {
     const d = themaDaten(THEMEN[schritt - 2].id);
     return d.stark !== null && Boolean(d.helfen);
   }
-  if (schritt === 15) return antwort.einwilligung;
+  if (schritt === LETZT) return antwort.einwilligung;
   return true;
 }
 
 function zeichnen() {
-  document.getElementById("balken").style.width = `${Math.min(schritt, 15) / 15 * 100}%`;
+  document.getElementById("balken").style.width = `${Math.min(schritt, LETZT) / LETZT * 100}%`;
   document.documentElement.lang = sprache;
   document.title = t().titel;
   document.getElementById("link-datenschutz").textContent = sprache === "de" ? "Datenschutz" : "Privacy";
@@ -259,11 +212,11 @@ function zeichnen() {
       <p class="frage">${t().diagnose}</p>${wahlKnoepfe("diagnose", Object.entries(t().diagnoseWahl), antwort.diagnose)}
       <p class="frage">${t().alter}</p>${wahlKnoepfe("alter", ALTER.map((a) => [a, a]), antwort.alter)}
       <p class="hinweis">${t().unter16}</p>`;
-  } else if (schritt <= 14) {
+  } else if (schritt < LETZT) {
     const thema = THEMEN[schritt - 2];
     const [name, erklaer, wege] = thema[sprache];
     const d = themaDaten(thema.id);
-    html = `<p class="hinweis">${schritt - 1} / 13</p><h2>${name}</h2><p class="erklaer">${erklaer}</p>
+    html = `<p class="hinweis">${schritt - 1} / ${THEMEN.length}</p><h2>${name}</h2><p class="erklaer">${erklaer}</p>
       <p class="frage">${t().f1}</p>${wahlKnoepfe("stark", t().skala.map((s, i) => [i, `${i}<small>${s}</small>`]), d.stark, "skala")}
       <p class="frage">${t().f2}</p>${wahlKnoepfe("helfen", Object.entries(t().helfenWahl), d.helfen)}`;
     if (d.helfen && d.helfen !== "nein") {
@@ -273,6 +226,7 @@ function zeichnen() {
     }
   } else {
     html = `<h2>${t().schluss}</h2>
+      <p class="frage">${t().nichtWeg}</p><textarea id="nicht_weg" maxlength="2000">${esc(antwort.nicht_weg)}</textarea>
       <p class="frage">${t().eineSache}</p><textarea id="eine_sache" maxlength="2000">${esc(antwort.eine_sache)}</textarea>
       <p class="frage">${t().zuViel}</p><textarea id="zu_viel" maxlength="2000">${esc(antwort.zu_viel)}</textarea>
       <p class="frage">${t().testen}</p>${wahlKnoepfe("testen", Object.entries(t().testenWahl), antwort.testen)}
@@ -283,7 +237,7 @@ function zeichnen() {
   }
 
   if (!ende) {
-    const vorKnopf = schritt === 15 ? t().senden : schritt === 0 ? t().los : t().weiter;
+    const vorKnopf = schritt === LETZT ? t().senden : schritt === 0 ? t().los : t().weiter;
     html += `<div class="unten">
       ${schritt > 0 ? `<button class="knopf zurueck" id="zurueck">${t().zurueck}</button>` : "<span></span>"}
       <button class="knopf" id="weiter" ${darfWeiter() ? "" : "disabled"}>${vorKnopf}</button></div>`;
@@ -292,7 +246,7 @@ function zeichnen() {
 }
 
 function textfelderMerken() {
-  for (const id of ["eine_sache", "zu_viel", "email"]) {
+  for (const id of ["nicht_weg", "eine_sache", "zu_viel", "email"]) {
     const feld = document.getElementById(id);
     if (feld) antwort[id] = feld.value.trim();
   }
@@ -302,11 +256,11 @@ function textfelderMerken() {
 
 function gesamt() {
   return {
-    v: 1, sprache, datum: new Date().toISOString().slice(0, 10),
+    v: 2, sprache, datum: new Date().toISOString().slice(0, 10),
     diagnose: antwort.diagnose, alter: antwort.alter,
     themen: Object.fromEntries(Object.entries(antwort.themen).map(([id, d]) =>
       [id, d.helfen === "nein" ? { stark: d.stark, helfen: d.helfen, wie: [], anders: "" } : d])),
-    eine_sache: antwort.eine_sache, zu_viel: antwort.zu_viel,
+    nicht_weg: antwort.nicht_weg, eine_sache: antwort.eine_sache, zu_viel: antwort.zu_viel,
     testen: antwort.testen === "ja", email: antwort.testen === "ja" ? antwort.email : "",
   };
 }
@@ -352,7 +306,7 @@ karte.addEventListener("click", async (e) => {
     zeichnen();
   } else if (b.id === "weiter") {
     textfelderMerken();
-    if (schritt === 15) return senden();
+    if (schritt === LETZT) return senden();
     schritt++;
     zeichnen();
     window.scrollTo(0, 0);
